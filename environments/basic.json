@@ -1,0 +1,8 @@
+{
+  "xMax": 200,
+  "yMax": 200,
+  "floraCount": 40,
+  "floraDecayRate": 0.1,
+  "faunaCount": 20,
+  "faunaDecayRate": 0.1
+}
