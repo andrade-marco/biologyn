@@ -2,9 +2,6 @@
 #define BIOLOGYN_FAUNA_H
 
 #include "Living.h"
-#include "Environment.h"
-
-class Environment;
 
 enum NutritionType {
     herbivore,
@@ -18,13 +15,12 @@ enum Gender {
 
 class Fauna: public Living {
 public:
-    Fauna(float decay_rate, Environment &env, NutritionType type, Gender gender, float reproduction_prob);
+    Fauna(Environment &env, NutritionType type, Gender gender, float decay_rate, float fertility);
 private:
-    Environment &_env;
     NutritionType _type;
     Gender _gender;
-    float _reproduction_prob;
-    float _attack_success_rate;
+    float _fertility;
+    float _attack_accuracy;
 
     void move();
 };

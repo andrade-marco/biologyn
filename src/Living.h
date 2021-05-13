@@ -2,7 +2,6 @@
 #define BIOLOGYN_LIVING_H
 
 #include <vector>
-#include "Environment.h"
 
 class Environment;
 
@@ -10,8 +9,8 @@ class Living {
 public:
     Living(Environment& env, float decay_rate);
 
-    int const getHealth();
-    std::vector<unsigned int> getCurrentLocation;
+    const int getHealth();
+    std::vector<unsigned int> getCurrentLocation();
 private:
     Environment& _env;
     unsigned int _x;
@@ -19,7 +18,7 @@ private:
     unsigned int _health {100};
     float _decay_rate {};
 
-    void setHealth();
+    void setHealth(int health);
     void setInitialPosition();
 };
 

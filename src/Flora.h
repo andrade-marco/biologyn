@@ -5,15 +5,13 @@
 #ifndef BIOLOGYN_FLORA_H
 #define BIOLOGYN_FLORA_H
 
+#include "Living.h"
 
-class Flora {
+class Environment;
+
+class Flora: public Living {
 public:
-    Flora();
-
-private:
-    int _health {100};
-    float _reproduction_rate;
-    float _health_decay_rate;
+    Flora(Environment &env, float decay_rate);
 };
 
 
