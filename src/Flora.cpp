@@ -1,4 +1,4 @@
 #include "Flora.h"
 #include <iostream>
 
-Flora::Flora(Environment &env, float decay_rate): Living(env, decay_rate) {};
+Flora::Flora(std::string id, Environment &env, float decay_rate): Living(id, env, decay_rate) {};

@@ -1,58 +1,47 @@
-//
-// Created by Marco Andrade on 2021-04-12.
-//
-
+#include <algorithm>
 #include <nlohmann/json.hpp>
 #include <iostream>
 #include "Environment.h"
 
-using json = nlohmann::json;
+Environment::Environment() {};
 
-Environment::Environment(unsigned int x, unsigned int y): _xBound{x}, _yBound{y} {};
+Environment::Environment(nlohmann::json parsedJson): _configuration{parsedJson} {};
 
 std::vector<unsigned int> Environment::getDimensions() {
-    return std::vector<unsigned int> {this->_xBound, this->_yBound};
+    return this->_configuration["axesLimits"].get<std::vector<unsigned int>>();
 }
 
-bool Environment::validateJsonEnvironment(json &parsed) {
-    try {
-        auto xMax = (unsigned int)parsed["xMax"];
-        auto yMax = (unsigned int)parsed["yMax"];
+nlohmann::json Environment::getFaunaConfigByTypes(NutritionType type, Gender gender) const {
+    std::string genderType = gender == Gender::male ? "male" : "female";
+    std::string nutritionType = type == NutritionType::herbivore ? "herbivores" : "carnivores";
 
-        if (xMax > MAX_DIMENSION || yMax > MAX_DIMENSION) {
-            std::cout << "\nInvalid dimensions: xMax and yMax must not exceed " << MAX_DIMENSION << std::endl;
-            return false;
-        }
-
-        if ((int)parsed["faunaCount"] > (xMax * yMax)) {
-            std::cout << "\nInvalid faunaCount: it must not exceed xMax multiplied by yMax" << std::endl;
-            return false;
-        }
-
-        if ((int)parsed["floraCount"] > (xMax * yMax)) {
-            std::cout << "\nInvalid floraCount: it must not exceed xMax multiplied by yMax" << std::endl;
-            return false;
-        }
-
-        return true;
-
-    } catch (json::type_error &error) {
-        std::cout << "\nEnvironment file missing required keys. Please review README file.";
-        return false;
-    } catch (std::exception &error) {
-        std::cout << "\nSomething went wrong. Please review your environment file.";
-        return false;
-    }
+    return this->_configuration["faunaPopulation"][genderType][nutritionType];
 }
 
-std::map<std::string, int> Environment::transformJsonEnvironment(json &parsed) {
-    std::map<std::string, int> transformed {};
-    for (auto& el : parsed.items()) {
-        transformed[el.key()] = (int) el.value();
-    }
+unsigned int Environment::getFloraTotal() {
+    return this->_configuration["floraPopulation"]["total"].get<unsigned int>();
+};
 
-    return transformed;
-}
+float Environment::getFloraDecayRate() {
+    return this->_configuration["floraPopulation"]["decayRate"].get<unsigned int>() / 100;
+};
+
+unsigned int Environment::getFaunaTotal(NutritionType type, Gender gender) {
+    return this->getFaunaConfigByTypes(type, gender)["total"].get<unsigned int>();
+};
+
+float Environment::getFaunaDecayRate(NutritionType type, Gender gender) {
+    return this->getFaunaConfigByTypes(type, gender)["decayRate"].get<unsigned int>() / 100;
+};
+
+//std::map<std::string, unsigned int> Environment::transformJsonEnvironment(nlohmann::json &parsed) {
+//    std::map<std::string, unsigned int> transformed {};
+//    for (auto& el : parsed.items()) {
+//        transformed[el.key()] = static_cast<unsigned int>(el.value());
+//    }
+//
+//    return transformed;
+//}
 
 void Environment::addFlora(std::unique_ptr<Flora> flora) {
     this->_flora.emplace_back(std::move(flora));
@@ -60,4 +49,33 @@ void Environment::addFlora(std::unique_ptr<Flora> flora) {
 
 void Environment::addFauna(std::unique_ptr<Fauna> fauna) {
     this->_fauna.emplace_back(std::move(fauna));
+}
+
+void Environment::simulate() {
+    int count {0};
+    int encounters {0};
+    while (count < 1000) {
+        for (auto& currIndividual:this->_fauna) {
+            currIndividual->move();
+            const auto id = currIndividual->getId();
+            const auto currentPos = currIndividual->getCurrentLocation();
+            auto foundIndividual = std::find_if(
+                    this->_fauna.begin(),
+                    this->_fauna.end(),
+                    [&id, &currentPos](std::unique_ptr<Fauna>& entry) {
+                        auto entryPos = entry->getCurrentLocation();
+                        bool samePos = std::equal(currentPos.begin(), currentPos.end(), entryPos.begin());
+                        return id != entry->getId() && samePos;
+                    }
+            );
+
+            if (*foundIndividual) {
+//                this->_fauna.erase(this->_fauna.begin(), it);
+                std::cout << currIndividual->getType() << " " << (*foundIndividual)->getType() << std::endl;
+                encounters++;
+            }
+        }
+
+        count++;
+    }
 }

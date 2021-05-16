@@ -1,7 +1,3 @@
-//
-// Created by Marco Andrade on 2021-05-12.
-//
-
 #include <iostream>
 #include <fstream>
 #include "FileParser.h"
@@ -28,7 +24,7 @@ nlohmann::json FileParser::parseFile() {
             std::cin >> filename;
 
             cleanFilename(filename);
-            std::string path = filePathPrefix + filename + validExtension;
+            std::string path {filePathPrefix + filename + validExtension};
             std::ifstream ifs(path);
             parsed = nlohmann::json::parse(ifs);
             success = true;

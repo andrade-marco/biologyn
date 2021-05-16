@@ -1,10 +1,29 @@
 {
-  "xMax": 200,
-  "yMax": 200,
-  "floraCount": 40,
-  "floraDecayRate": 10,
-  "faunaCount": 20,
-  "faunaDecayRate": 10,
-  "genderRatio": 50,
-  "nutritionTypeRatio": 50
+  "axesLimits": [200, 200],
+  "floraPopulation": {
+    "total": 40,
+    "decayRate": 10
+  },
+  "faunaPopulation": {
+    "male": {
+      "herbivores": {
+        "total": 20,
+        "decayRate": 10
+      },
+      "carnivores": {
+        "total": 20,
+        "decayRate": 10
+      }
+    },
+    "female": {
+      "herbivores": {
+        "total": 20,
+        "decayRate": 10
+      },
+      "carnivores": {
+        "total": 20,
+        "decayRate": 10
+      }
+    }
+  }
 }

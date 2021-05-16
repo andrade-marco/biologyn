@@ -4,9 +4,13 @@
 
 constexpr int AXIS_ORIGIN = 0;
 
-Living::Living(Environment& env, float decay_rate) : _env{env}, _decay_rate{decay_rate} {
+Living::Living(std::string id, Environment& env, float decay_rate) : _id{id}, _env{env}, _decay_rate{decay_rate} {
     this->setInitialPosition();
 };
+
+const std::string Living::getId() {
+    return this->_id;
+}
 
 std::vector<unsigned int> Living::getCurrentLocation() {
     return std::vector<unsigned int> {this->_x, this->_y};

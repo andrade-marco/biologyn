@@ -15,14 +15,17 @@ enum Gender {
 
 class Fauna: public Living {
 public:
-    Fauna(Environment &env, NutritionType type, Gender gender, float decay_rate, float fertility);
+    Fauna(std::string id, Environment &env, NutritionType type, Gender gender, float decay_rate, float fertility);
+    NutritionType getType();
+    Gender getGender();
+    void move();
 private:
     NutritionType _type;
     Gender _gender;
     float _fertility;
     float _attack_accuracy;
 
-    void move();
+    void setLocation(unsigned int x, unsigned int y);
 };
 
 
