@@ -11,27 +11,39 @@ std::vector<unsigned int> Environment::getDimensions() {
     return this->_configuration["axesLimits"].get<std::vector<unsigned int>>();
 }
 
-nlohmann::json Environment::getFaunaConfigByTypes(NutritionType type, Gender gender) const {
+unsigned int Environment::getFaunaIntegerConfig(NutritionType type, Gender gender, std::string key) const {
     std::string genderType = gender == Gender::male ? "male" : "female";
     std::string nutritionType = type == NutritionType::herbivore ? "herbivores" : "carnivores";
 
-    return this->_configuration["faunaPopulation"][genderType][nutritionType];
+    return this->_configuration["faunaPopulation"][genderType][nutritionType][key].get<unsigned int>();
 }
 
-unsigned int Environment::getFloraTotal() {
-    return this->_configuration["floraPopulation"]["total"].get<unsigned int>();
+unsigned int Environment::getFloraIntegerConfig(std::string key) const {
+    return this->_configuration["floraPopulation"][key].get<unsigned int>();
 };
 
-float Environment::getFloraDecayRate() {
-    return this->_configuration["floraPopulation"]["decayRate"].get<unsigned int>() / 100;
+unsigned int Environment::getFloraTotal() {
+    return this->getFloraIntegerConfig("total");
+};
+
+unsigned int Environment::getFloraDecayRate() {
+    return this->getFloraIntegerConfig("decayRate");
 };
 
 unsigned int Environment::getFaunaTotal(NutritionType type, Gender gender) {
-    return this->getFaunaConfigByTypes(type, gender)["total"].get<unsigned int>();
+    return this->getFaunaIntegerConfig(type, gender, "total");
 };
 
-float Environment::getFaunaDecayRate(NutritionType type, Gender gender) {
-    return this->getFaunaConfigByTypes(type, gender)["decayRate"].get<unsigned int>() / 100;
+unsigned int Environment::getFaunaDecayRate(NutritionType type, Gender gender) {
+    return this->getFaunaIntegerConfig(type, gender, "decayRate");
+};
+
+unsigned int Environment::getFaunaMinAttackRate(NutritionType type, Gender gender) {
+    return this->getFaunaIntegerConfig(type, gender, "minAttackRate");
+};
+
+unsigned int Environment::getFaunaMinDefendRate(NutritionType type, Gender gender) {
+    return this->getFaunaIntegerConfig(type, gender, "minDefendRate");
 };
 
 //std::map<std::string, unsigned int> Environment::transformJsonEnvironment(nlohmann::json &parsed) {
@@ -53,7 +65,6 @@ void Environment::addFauna(std::unique_ptr<Fauna> fauna) {
 
 void Environment::simulate() {
     int count {0};
-    int encounters {0};
     while (count < 1000) {
         for (auto& currIndividual:this->_fauna) {
             currIndividual->move();
@@ -66,13 +77,18 @@ void Environment::simulate() {
                         auto entryPos = entry->getCurrentLocation();
                         bool samePos = std::equal(currentPos.begin(), currentPos.end(), entryPos.begin());
                         return id != entry->getId() && samePos;
-                    }
-            );
+                    });
 
             if (*foundIndividual) {
-//                this->_fauna.erase(this->_fauna.begin(), it);
-                std::cout << currIndividual->getType() << " " << (*foundIndividual)->getType() << std::endl;
-                encounters++;
+                // this->_fauna.erase(std::remove(this->_fauna.begin(), this->_fauna.end(), *foundIndividual));
+                if (currIndividual->getType() == (*foundIndividual)->getType()) {
+
+                }
+
+                // If same type, then check gender
+                //      If same gender, attack for territory
+                //      else try to mate
+                // else carnivore attacks herbivore
             }
         }
 

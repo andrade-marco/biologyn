@@ -8,21 +8,29 @@
     "male": {
       "herbivores": {
         "total": 20,
-        "decayRate": 10
+        "decayRate": 10,
+        "minAttackRate": 50,
+        "minDefendRate": 50
       },
       "carnivores": {
         "total": 20,
-        "decayRate": 10
+        "decayRate": 10,
+        "minAttackRate": 50,
+        "minDefendRate": 50
       }
     },
     "female": {
       "herbivores": {
         "total": 20,
-        "decayRate": 10
+        "decayRate": 10,
+        "minAttackRate": 50,
+        "minDefendRate": 50
       },
       "carnivores": {
         "total": 20,
-        "decayRate": 10
+        "decayRate": 10,
+        "minAttackRate": 50,
+        "minDefendRate": 50
       }
     }
   }

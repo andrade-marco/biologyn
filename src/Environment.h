@@ -20,10 +20,12 @@ public:
     std::vector<unsigned int> getDimensions();
 
     unsigned int getFloraTotal();
-    float getFloraDecayRate();
+    unsigned int getFloraDecayRate();
 
     unsigned int getFaunaTotal(NutritionType type, Gender gender);
-    float getFaunaDecayRate(NutritionType type, Gender gender);
+    unsigned int getFaunaDecayRate(NutritionType type, Gender gender);
+    unsigned int getFaunaMinAttackRate(NutritionType type, Gender gender);
+    unsigned int getFaunaMinDefendRate(NutritionType type, Gender gender);
 
     void addFlora(std::unique_ptr<Flora> flora);
     void addFauna(std::unique_ptr<Fauna> fauna);
@@ -33,7 +35,8 @@ private:
     nlohmann::json _configuration {};
     unsigned int _age {0};
 
-    nlohmann::json getFaunaConfigByTypes(NutritionType type, Gender gender) const;
+    unsigned int getFaunaIntegerConfig(NutritionType type, Gender gender, std::string key) const;
+    unsigned int getFloraIntegerConfig(std::string key) const;
 
     std::vector<std::unique_ptr<Flora>> _flora;
     std::vector<std::unique_ptr<Fauna>> _fauna;

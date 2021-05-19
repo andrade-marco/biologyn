@@ -39,9 +39,7 @@ int main() {
 
             for (int k = 0; k < env.getFaunaTotal(type, gender); ++k) {
                 std::string id = "fauna_" + std::to_string(k);
-                env.addFauna(std::make_unique<Fauna>(
-                        Fauna(id, env, type, gender, env.getFaunaDecayRate(type, gender), 10)
-                ));
+                env.addFauna(std::make_unique<Fauna>(Fauna(id, env, type, gender)));
             }
         }
     }

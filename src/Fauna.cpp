@@ -4,9 +4,14 @@
 #include "Environment.h"
 
 constexpr int AXIS_ORIGIN = 0;
+constexpr int MAX_RATE = 100;
 
-Fauna::Fauna(std::string id, Environment &env, NutritionType type, Gender gender, float decay_rate, float fertility)
-    : Living(id, env, decay_rate), _type{type}, _gender{gender}, _fertility{fertility} {};
+Fauna::Fauna(std::string id, Environment &env, NutritionType type, Gender gender) :
+    Living(id, env, env.getFaunaDecayRate(type, gender)),
+    _type{type},
+    _gender{gender},
+    _min_attack_rate{env.getFaunaMinAttackRate(type, gender)},
+    _min_defend_rate{env.getFaunaMinDefendRate(type, gender)} {};
 
 void Fauna::setLocation(unsigned int x, unsigned int y) {
     this->_x = x;
@@ -42,4 +47,23 @@ void Fauna::move() {
      unsigned int newY = getNewPosition(currentLocation[1], envLimits[1]);
 
      this->setLocation(newX, newY);
+}
+
+void Fauna::graze(Flora& flora) {
+    if (this->getType() == NutritionType::herbivore) {
+        auto healthGap = Living::MAX_HEALTH - this->getHealth();
+        this->setHealth(flora.transferHealth(healthGap));
+    }
+};
+
+unsigned int Fauna::attack() {
+    return Chaos::random_integer(this->_min_attack_rate, MAX_RATE);
+};
+
+unsigned int Fauna::defend() {
+    return Chaos::random_integer(this->_min_defend_rate, MAX_RATE);
+};
+
+bool Fauna::attack_success(Fauna& opponent) {
+    return this->attack() > opponent.defend();
 }

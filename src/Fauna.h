@@ -2,6 +2,7 @@
 #define BIOLOGYN_FAUNA_H
 
 #include "Living.h"
+#include "Flora.h"
 
 enum NutritionType {
     herbivore,
@@ -15,17 +16,21 @@ enum Gender {
 
 class Fauna: public Living {
 public:
-    Fauna(std::string id, Environment &env, NutritionType type, Gender gender, float decay_rate, float fertility);
+    Fauna(std::string id, Environment &env, NutritionType type, Gender gender);
     NutritionType getType();
     Gender getGender();
     void move();
+    void graze(Flora& flora);
+    bool attack_success(Fauna &opponent);
 private:
     NutritionType _type;
     Gender _gender;
-    float _fertility;
-    float _attack_accuracy;
+    unsigned int _min_attack_rate;
+    unsigned int _min_defend_rate;
 
     void setLocation(unsigned int x, unsigned int y);
+    unsigned int attack();
+    unsigned int defend();
 };
 
 
