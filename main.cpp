@@ -45,6 +45,7 @@ int main() {
     }
 
     env.simulate();
+    env.report();
 
     return 0;
 }

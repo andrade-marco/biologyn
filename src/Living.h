@@ -10,12 +10,15 @@ class Environment;
 
 class Living {
 public:
-    static const unsigned int MAX_HEALTH {500};
+    static const int MAX_HEALTH {500};
     Living(std::string id, Environment& env, unsigned int decay_rate);
 
-    const int getHealth();
-    const std::string getId();
+    std::string getId();
+    unsigned int getAge();
+    unsigned int getHealth();
     std::vector<unsigned int> getCurrentLocation();
+
+    void transferHealth(Living& predator);
     void decay();
 
 private:
@@ -26,9 +29,11 @@ protected:
     Environment& _env;
     unsigned int _x;
     unsigned int _y;
+    unsigned int _age {0};
     unsigned int _health {MAX_HEALTH};
     unsigned int _decay_rate {};
 
+    void incrementAge();
     void setHealth(int health);
 };
 

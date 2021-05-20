@@ -1,3 +1,4 @@
+#include <iostream>
 #include <algorithm>
 #include "Fauna.h"
 #include "Chaos.h"
@@ -12,6 +13,7 @@ Fauna::Fauna(std::string id, Environment &env, NutritionType type, Gender gender
     _gender{gender},
     _min_attack_rate{env.getFaunaMinAttackRate(type, gender)},
     _min_defend_rate{env.getFaunaMinDefendRate(type, gender)} {};
+
 
 void Fauna::setLocation(unsigned int x, unsigned int y) {
     this->_x = x;
@@ -51,8 +53,7 @@ void Fauna::move() {
 
 void Fauna::graze(Flora& flora) {
     if (this->getType() == NutritionType::herbivore) {
-        auto healthGap = Living::MAX_HEALTH - this->getHealth();
-        this->setHealth(flora.transferHealth(healthGap));
+        flora.transferHealth(*this);
     }
 };
 
@@ -64,6 +65,22 @@ unsigned int Fauna::defend() {
     return Chaos::random_integer(this->_min_defend_rate, MAX_RATE);
 };
 
-bool Fauna::attack_success(Fauna& opponent) {
-    return this->attack() > opponent.defend();
+void Fauna::battle(Fauna& opponent) {
+    if (this->attack() > opponent.defend()) {
+        std::string action {" killed [territorial] "};
+
+        // No cannibalism rule
+        if (this->getType() != opponent.getType()) {
+            opponent.transferHealth(*this);
+            action = " killed [eating] ";
+        }
+
+        opponent.setHealth(0);
+        std::cout << this->getId() << action << opponent.getId() << std::endl;
+    }
+
 }
+
+void Fauna::mate(Fauna& partner) {
+    std::cout << this->getId() << " mated with " << partner.getId() << std::endl;
+};

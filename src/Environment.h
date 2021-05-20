@@ -31,15 +31,19 @@ public:
     void addFauna(std::unique_ptr<Fauna> fauna);
 
     void simulate();
+    void report();
 private:
     nlohmann::json _configuration {};
     unsigned int _age {0};
+    std::unique_ptr<Fauna> _lastFauna {};
+    std::vector<std::unique_ptr<Flora>> _flora;
+    std::vector<std::unique_ptr<Fauna>> _fauna;
 
     unsigned int getFaunaIntegerConfig(NutritionType type, Gender gender, std::string key) const;
     unsigned int getFloraIntegerConfig(std::string key) const;
 
-    std::vector<std::unique_ptr<Flora>> _flora;
-    std::vector<std::unique_ptr<Fauna>> _fauna;
+    void incrementAge();
+    void faunaCleanup();
 };
 
 

@@ -21,7 +21,8 @@ public:
     Gender getGender();
     void move();
     void graze(Flora& flora);
-    bool attack_success(Fauna &opponent);
+    void battle(Fauna& opponent);
+    void mate(Fauna& partner);
 private:
     NutritionType _type;
     Gender _gender;
