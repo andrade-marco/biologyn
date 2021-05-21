@@ -1,5 +1,7 @@
 #include <iostream>
 #include <algorithm>
+#include <memory>
+#include "Flora.h"
 #include "Fauna.h"
 #include "Chaos.h"
 #include "Environment.h"
@@ -41,6 +43,11 @@ int getNewPosition(int current, int limit) {
     return newPos;
 }
 
+template <class S, class T>
+void sendMessage(S& self, T& target, std::string message) {
+    std::cout << self.getId() << message << target.getId() << std::endl;
+}
+
 void Fauna::move() {
      auto envLimits {this->_env.getDimensions()};
      auto currentLocation {this->getCurrentLocation()};
@@ -51,9 +58,64 @@ void Fauna::move() {
      this->setLocation(newX, newY);
 }
 
+void Fauna::scan() {
+    if (this->getType() == NutritionType::herbivore) {
+        this->searchFlora();
+    }
+
+    this->searchFauna();
+};
+
 void Fauna::graze(Flora& flora) {
     if (this->getType() == NutritionType::herbivore) {
         flora.transferHealth(*this);
+        std::cout << this->getId() << " grazed on " << flora.getId() << std::endl;
+    }
+};
+
+void Fauna::searchFlora() {
+    const auto currentPos = this->getCurrentLocation();
+    auto& flora = this->_env.getFlora();
+    if (this->getType() == NutritionType::herbivore && !flora.empty()) {
+        auto foundFlora = std::find_if(flora.begin(), flora.end(), [&currentPos](auto& entry) {
+                    auto entryPos = entry->getCurrentLocation();
+                    return std::equal(currentPos.begin(), currentPos.end(), entryPos.begin());
+                }
+        );
+
+        if (foundFlora != flora.end()) {
+            this->graze(**foundFlora);
+        }
+    }
+};
+
+void Fauna::searchFauna() {
+    const auto currentPos = this->getCurrentLocation();
+    const auto id = this->getId();
+    auto& fauna = this->_env.getFauna();
+    auto foundIndividual = std::find_if(fauna.begin(), fauna.end(), [&id, &currentPos](auto& entry) {
+                auto entryPos = entry->getCurrentLocation();
+                bool samePos = std::equal(currentPos.begin(), currentPos.end(), entryPos.begin());
+                return id != entry->getId() && samePos;
+            });
+
+    if (foundIndividual != fauna.end()) {
+        auto type = this->getType();
+        auto gender = this->getGender();
+        if (type == (*foundIndividual)->getType()) {
+            if (gender == (*foundIndividual)->getGender()) {
+                this->battle(**foundIndividual);
+            } else {
+                this->mate(**foundIndividual);
+            }
+        } else {
+            if (type == NutritionType::carnivore) {
+                this->battle(**foundIndividual);
+            } else {
+                this->move(); // run away
+                sendMessage(*this, **foundIndividual, " ran from ");
+            }
+        }
     }
 };
 
@@ -76,11 +138,10 @@ void Fauna::battle(Fauna& opponent) {
         }
 
         opponent.setHealth(0);
-        std::cout << this->getId() << action << opponent.getId() << std::endl;
+        sendMessage(*this, opponent, action);
     }
-
 }
 
 void Fauna::mate(Fauna& partner) {
-    std::cout << this->getId() << " mated with " << partner.getId() << std::endl;
+    sendMessage(*this, partner, " mated with ");
 };

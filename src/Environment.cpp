@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <thread>
 #include <nlohmann/json.hpp>
 #include <iostream>
 #include "Chaos.h"
@@ -28,7 +29,7 @@ unsigned int Environment::getFloraTotal() {
 };
 
 unsigned int Environment::getFloraDecayRate() {
-    return this->getFloraIntegerConfig("decayRate");
+    return this->getFloraIntegerConfig("maxDecayRate");
 };
 
 unsigned int Environment::getFaunaTotal(NutritionType type, Gender gender) {
@@ -36,7 +37,7 @@ unsigned int Environment::getFaunaTotal(NutritionType type, Gender gender) {
 };
 
 unsigned int Environment::getFaunaDecayRate(NutritionType type, Gender gender) {
-    return this->getFaunaIntegerConfig(type, gender, "decayRate");
+    return this->getFaunaIntegerConfig(type, gender, "maxDecayRate");
 };
 
 unsigned int Environment::getFaunaMinAttackRate(NutritionType type, Gender gender) {
@@ -45,6 +46,14 @@ unsigned int Environment::getFaunaMinAttackRate(NutritionType type, Gender gende
 
 unsigned int Environment::getFaunaMinDefendRate(NutritionType type, Gender gender) {
     return this->getFaunaIntegerConfig(type, gender, "minDefendRate");
+};
+
+const std::vector<std::unique_ptr<Flora>>& Environment::getFlora() {
+    return this->_flora;
+};
+
+const std::vector<std::unique_ptr<Fauna>>& Environment::getFauna() {
+    return this->_fauna;
 };
 
 //std::map<std::string, unsigned int> Environment::transformJsonEnvironment(nlohmann::json &parsed) {
@@ -68,85 +77,41 @@ void Environment::incrementAge() {
     this->_age++;
 };
 
-void Environment::faunaCleanup() {
-    bool allDead = std::all_of(this->_fauna.begin(),this->_fauna.end(), [](std::unique_ptr<Fauna>& element) {
-        return element->getHealth() == 0;
-    });
-
-    if (allDead) {
-        auto index = Chaos::random_integer(0, this->_fauna.size() - 1);
-        this->_lastFauna = std::move(this->_fauna[index]);
-        this->_fauna.clear();
-        std::cout << "\nWARNING: All fauna extinct..." << std::endl;
-    } else {
-        this->_fauna.erase(
-                std::remove_if(
-                        this->_fauna.begin(),
-                        this->_fauna.end(),
-                        [this](std::unique_ptr<Fauna>& element) {
-                            return (*element).getHealth() == 0;
-                        }),
-                this->_fauna.end()
-        );
-    }
-}
-
 void Environment::simulate() {
-    while (!this->_fauna.empty()) {
+    while (!this->_fauna.empty() || !this->_flora.empty()) {
         for (auto& currIndividual:this->_fauna) {
             if (currIndividual->getHealth() == 0) break;
 
             currIndividual->move();
-            const auto id = currIndividual->getId();
-            const auto currentPos = currIndividual->getCurrentLocation();
-            auto foundIndividual = std::find_if(
-                    this->_fauna.begin(),
-                    this->_fauna.end(),
-                    [&id, &currentPos](std::unique_ptr<Fauna>& entry) {
-                        auto entryPos = entry->getCurrentLocation();
-                        bool samePos = std::equal(currentPos.begin(), currentPos.end(), entryPos.begin());
-                        return id != entry->getId() && samePos;
-                    });
-
-            if (foundIndividual != this->_fauna.end()) {
-                if (currIndividual->getType() == (*foundIndividual)->getType()) {
-                    if (currIndividual->getGender() == (*foundIndividual)->getGender()) {
-                        currIndividual->battle(**foundIndividual);
-                    } else {
-                        currIndividual->mate(**foundIndividual);
-                    }
-                } else {
-                    if (currIndividual->getType() == NutritionType::carnivore) {
-                        currIndividual->battle(**foundIndividual);
-                    } else {
-                        currIndividual->move(); // run away
-                        std::cout << currIndividual->getId()
-                                  << " ran from "
-                                  << (*foundIndividual)->getId()
-                                  << std::endl;
-                    }
-                }
-            }
-
-            currIndividual->decay();
+            currIndividual->scan();
         }
 
-        this->faunaCleanup();
+        this->cleanUp(this->_fauna, this->_lastFauna, "\nWARNING: All fauna extinct...");
+        this->cleanUp(this->_flora, this->_lastFlora, "\nWARNING: All flora extinct...");
         this->incrementAge();
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 }
 
 void Environment::report() {
     std::cout << "\n\n*** SUMMARY ***\n" << std::endl;
 
-    std::cout << "Environment existed for " << this->_age + 1 << " days\n" << std::endl;
+    std::cout << "Environment existed for " << this->_age << " days\n" << std::endl;
 
     auto lastFauna = this->_lastFauna.get();
+    auto lastFlora = this->_lastFlora.get();
+
+    auto type = lastFauna->getType() == NutritionType::carnivore ? "Carnivore" : "Herbivore";
+    auto gender = lastFauna->getGender() == Gender::female ? "Female" : "Male";
     std::cout
         << "Last fauna: " << lastFauna->getId() << "\n"
         << "Age: " << lastFauna->getAge() << "\n"
-        << "Type: " << lastFauna->getType() << "\n"
-        << "Gender: " << lastFauna->getGender() << "\n\n";
+        << "Type: " << type << "\n"
+        << "Gender: " << gender << "\n\n";
+
+    std::cout
+        << "Last flora: " << lastFlora->getId() << "\n"
+        << "Age: " << lastFlora->getAge() << "\n\n";
 
     std::cout << "*** THE END OF TIME ***" << std::endl;
 

@@ -32,14 +32,16 @@ int main() {
         )));
     }
 
+    int faunaCount {0};
     for (int i = Gender::male; i <= Gender::female; ++i) {
         for (int j = NutritionType::herbivore; j <= NutritionType::carnivore; ++j) {
             auto type = static_cast<NutritionType>(j);
             auto gender = static_cast<Gender>(i);
 
             for (int k = 0; k < env.getFaunaTotal(type, gender); ++k) {
-                std::string id = "fauna_" + std::to_string(k);
+                std::string id = "fauna_" + std::to_string(faunaCount);
                 env.addFauna(std::make_unique<Fauna>(Fauna(id, env, type, gender)));
+                faunaCount++;
             }
         }
     }

@@ -5,9 +5,9 @@
 
 constexpr int AXIS_ORIGIN = 0;
 
-Living::Living(std::string id, Environment& env, unsigned int decay_rate) :
-    _id{id}, _env{env}, _decay_rate{decay_rate} {
-        this->setInitialPosition();
+Living::Living(std::string id, Environment& env, unsigned int max_decay_rate) : _id{id}, _env{env} {
+    this->_decay_rate = Chaos::random_integer(1, max_decay_rate);
+    this->setInitialPosition();
 };
 
 std::string Living::getId() {
@@ -27,8 +27,13 @@ unsigned int Living::getHealth() {
 }
 
 void Living::decay() {
-    this->setHealth(this->getHealth() - this->_decay_rate);
-    this->incrementAge();
+    if (this->_health <= this->_decay_rate) {
+        this->setHealth(0);
+    } else {
+        this->setHealth(this->_health - this->_decay_rate);
+    }
+
+    this->_age++;
 }
 
 void Living::transferHealth(Living& predator) {

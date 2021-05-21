@@ -10,8 +10,8 @@ class Environment;
 
 class Living {
 public:
-    static const int MAX_HEALTH {500};
-    Living(std::string id, Environment& env, unsigned int decay_rate);
+    static const int MAX_HEALTH {1000};
+    Living(std::string id, Environment& env, unsigned int max_decay_rate);
 
     std::string getId();
     unsigned int getAge();

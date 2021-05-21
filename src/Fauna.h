@@ -19,7 +19,9 @@ public:
     Fauna(std::string id, Environment &env, NutritionType type, Gender gender);
     NutritionType getType();
     Gender getGender();
+
     void move();
+    void scan();
     void graze(Flora& flora);
     void battle(Fauna& opponent);
     void mate(Fauna& partner);
@@ -30,6 +32,8 @@ private:
     unsigned int _min_defend_rate;
 
     void setLocation(unsigned int x, unsigned int y);
+    void searchFlora();
+    void searchFauna();
     unsigned int attack();
     unsigned int defend();
 };
