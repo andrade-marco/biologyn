@@ -28,11 +28,11 @@ int main() {
     // Load individuals to environment if initialization is successful
     for (int i = 0; i < env.getFloraTotal(); ++i) {
         env.addFlora(std::make_unique<Flora>(
-                Flora("flora_" + std::to_string(i), env, env.getFloraDecayRate()
+                Flora("flora_" + std::to_string(i + 1), env, env.getFloraDecayRate()
         )));
     }
 
-    int faunaCount {0};
+    int faunaCount {1};
     for (int i = Gender::male; i <= Gender::female; ++i) {
         for (int j = NutritionType::herbivore; j <= NutritionType::carnivore; ++j) {
             auto type = static_cast<NutritionType>(j);
