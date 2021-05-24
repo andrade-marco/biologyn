@@ -8,8 +8,9 @@ namespace FileParser {
     const std::string validExtension {".json"};
     const std::string filePathPrefix {"../environments/"};
 
-    void cleanFilename(std::string &filename);
-    nlohmann::json parseFile();
+    void cleanFilename(std::string &fileName);
+    nlohmann::json simpleFileParse(std::string filePath);
+    nlohmann::json parseEnvironmentFile();
 };
 
 

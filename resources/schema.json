@@ -1,0 +1,37 @@
+{
+  "axesLimits": [2000, 2000],
+  "floraPopulation": {
+    "total": 2000,
+    "maxDecayRate": 100
+  },
+  "faunaPopulation": {
+    "male": {
+      "herbivores": {
+        "total": 2000,
+        "maxDecayRate": 100,
+        "minAttackRate": 100,
+        "minDefendRate": 100
+      },
+      "carnivores": {
+        "total": 2000,
+        "maxDecayRate": 100,
+        "minAttackRate": 100,
+        "minDefendRate": 100
+      }
+    },
+    "female": {
+      "herbivores": {
+        "total": 2000,
+        "maxDecayRate": 100,
+        "minAttackRate": 100,
+        "minDefendRate": 100
+      },
+      "carnivores": {
+        "total": 2000,
+        "maxDecayRate": 100,
+        "minAttackRate": 100,
+        "minDefendRate": 100
+      }
+    }
+  }
+}

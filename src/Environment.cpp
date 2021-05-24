@@ -3,11 +3,62 @@
 #include <nlohmann/json.hpp>
 #include <iostream>
 #include "Chaos.h"
+#include "FileParser.h"
 #include "Environment.h"
+
+void validateJson(
+        nlohmann::json& schema,
+        nlohmann::json& parsed,
+        std::vector<std::string> keys = {},
+        std::string key = ""
+    ) {
+
+    // Record path to variable being validated
+    if (key != "") keys.push_back(key);
+
+    for (auto& el : parsed.items()) {
+        if (!el.value().is_array() && el.value().is_structured()) {
+            validateJson(schema, el.value(), keys, el.key());
+        } else {
+            if (el.value().is_array()) {
+                auto convertedVec = el.value().get<std::vector<unsigned int>>();
+                auto convertedSchema = schema[el.key()].get<std::vector<unsigned int>>();
+                for (size_t i = 0; i < convertedVec.size(); ++i) {
+                    if (convertedVec[i] < 1 || convertedVec[i] > convertedSchema[i]) {
+                        throw std::exception();
+                    }
+                }
+            } else {
+                // Retrieve value path from schema up to the current element
+                nlohmann::json valuePath {schema};
+                for(auto it = keys.begin(); it != keys.end(); ++it) {
+                    if(it != keys.end()) valuePath = valuePath[*it];
+                }
+                auto convertedValue = el.value().get<unsigned int>();
+                if (convertedValue < 1 || convertedValue > valuePath[el.key()].get<unsigned int>()) {
+                    std::string errorPath {};
+                    for (auto& key:keys) errorPath += key + " > ";
+                    errorPath += el.key();
+
+                    std::cout << "Invalid parameter: "
+                              << errorPath
+                              << " - min value: 1 | max value: "
+                              << valuePath[el.key()].get<unsigned int>()
+                              << std::endl;
+
+                    throw std::exception();
+                }
+            }
+        }
+    }
+}
 
 Environment::Environment() {};
 
-Environment::Environment(nlohmann::json parsedJson): _configuration{parsedJson} {};
+Environment::Environment(nlohmann::json parsedJson): _configuration{parsedJson} {
+    auto schema = FileParser::simpleFileParse("../resources/schema.json");
+    validateJson(schema, parsedJson);
+};
 
 std::vector<unsigned int> Environment::getDimensions() {
     return this->_configuration["axesLimits"].get<std::vector<unsigned int>>();
@@ -55,15 +106,6 @@ const std::vector<std::unique_ptr<Flora>>& Environment::getFlora() {
 const std::vector<std::unique_ptr<Fauna>>& Environment::getFauna() {
     return this->_fauna;
 };
-
-//std::map<std::string, unsigned int> Environment::transformJsonEnvironment(nlohmann::json &parsed) {
-//    std::map<std::string, unsigned int> transformed {};
-//    for (auto& el : parsed.items()) {
-//        transformed[el.key()] = static_cast<unsigned int>(el.value());
-//    }
-//
-//    return transformed;
-//}
 
 void Environment::addFlora(std::unique_ptr<Flora> flora) {
     this->_flora.emplace_back(std::move(flora));

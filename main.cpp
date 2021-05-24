@@ -15,13 +15,14 @@ int main() {
     // Try to load environment and exit if validation or unexpected error occurs
     Environment env;
     try {
-        auto parsed = FileParser::parseFile();
+        auto parsed = FileParser::parseEnvironmentFile();
         env = Environment(parsed);
     } catch (nlohmann::json::type_error &error) {
-        std::cout << "\nEnvironment file missing required keys. Please review README file.";
+        std::cout << "\nEnvironment file missing required keys and/or contains unexpected keys. Please review README "
+                     "file.";
         return 0;
     } catch (std::exception &error) {
-        std::cout << "\nSomething went wrong. Please review your environment file.";
+        std::cout << "\nError occurred. Please review your environment file.";
         return 0;
     }
 
