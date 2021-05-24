@@ -85,22 +85,28 @@ by creating a JSON file in the environments directory and adding the required en
 
 #### Parameters
 Below you will find a description of each parameter contained in the JSON schema:
-- `axesLimits` - represents the boundaries of the environment, determining the area that individuals can move or be
+- `axesLimits` *(min: 1 | max: 2000)* - represents the boundaries of the environment, determining the area that
+ individuals can move or be
  placed in. Larger environments/worlds mean that individuals may need to travel longer distances to find nutrition
  , making it perhaps harder to survive (this depends on invidual count as well, see below)
  - `floraPopulation`/ `faunaPopulation` - parameters pertaining to the flora/fauna populations. In the case of fauna
  , the parameters are further divided by gender (`male` / `female`) and nutrition type (`herbivore` / `carnivore`):
-    - `total` - represents the total count of individuals to be included in the environment; higher numbers
+    - `total` *(min: 1 | max: 2000)* - represents the total count of individuals to be included in the environment
+    ; higher numbers
      mean more individuals of a particular kind in the environment.
-    - `maxDecayRate` - represents the max amount of health points that an individual will lose between two
+    - `maxDecayRate` *(min: 1 | max: 100)* - represents the max amount of health points that an individual will lose
+     between two
      consecutive days. When an individual is created, its decay rate is determined using this parameter. You are
      able to determine the maximum decay rate, but the actual decay rate is left to chance. For example, an individual
      is created with decay `5`, which means if it started with health `100`, on the environment's second day, its
      health will be `95`; if you defined `10` as the maximum decay rate, you know that no individual can decay by
      more than `10` between two consecutive rounds (assuming no interaction with other individuals happened).
-    - `minAttackRate` (fauna only) - a number between `1` and `100` that represents the minimum striking power of an
+    - `minAttackRate` *(fauna only - min: 1 | max: 100)* - a number between `1` and `100` that represents
+     the minimum
+     striking power of an
      individual. Again, you can determine the minimum power, but during a battle, the strike is left to chance.
-    - `minDefendRate` (fauna only) - a number between `1` and `100` that represents the minimum defensive power of an
+    - `minDefendRate` *(fauna only - min: 1 | max: 100)* - a number between `1` and `100` that represents the minimum
+     defensive power of an
      individual. As it is the case with attacking rates, you determine the minimum, but the actual defensive power
       will be determine in batlle.
       
