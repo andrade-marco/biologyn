@@ -110,7 +110,47 @@ Below you will find a description of each parameter contained in the JSON schema
      individual. As it is the case with attacking rates, you determine the minimum, but the actual defensive power
       will be determine in batlle.
       
-      
+#### Code Structure
+The code follows the OOP paradigm and it has a few main classes:
+- `Environment` holds the characteristics and individuals (fauna/flora) of the world
+- `Living` is the parent class for all living creatures in the environment
+    - `Fauna` class represents animals
+    - `Flora` class represents plants
+    
+In addition to these classes, the codebase defines two namespaces:
+- `Chaos` holds functionalities for generating random numbers to simulate unexpected behaviours
+- `FileParser` holds functionalities for reading and parsing files (JSON)
+
+##### Project Criteria
+Here we outline all areas that were addressed from the Project Rubric:
+- Loops, Functions, I/O
+    - Control structures
+        - any `.cpp` file
+    - File reading & User input
+        - `FileParser.cpp`
+- Object Oriented Programming
+    - OOP techniques
+        - `Living.cpp`
+        - `Fauna.cpp`
+        - `Flora.cpp`
+    - Access specifiers
+        - `Living.h` / `Living.cpp` 
+        - `Fauna.h` / `Fauna.cpp`
+        - `Flora.h` / `Flora.cpp`
+    - Member initialization lists
+        - `Living.cpp` lines `8-11`
+    - Inheritance hierarchy
+        - `Living.h` -> `Fauna.h` / `Flora.h` 
+    - Template generalize functions
+        - `Environment.h` lines `55-77`
+        - `Fauna.cpp` lines `46-49`
+- Memory Management
+    - Use of references
+        - `Living.cpp` lines `39-43`
+        - `Fauna.cpp` lines `130-143`
+    - Smart pointers
+        - `Environment.h` lines `45-46`
+
 #### Future Features
 ##### Functionalities
 - Fully implement mating, where offsprings are generated and added to fauna population, while inheriting
